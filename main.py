@@ -30,9 +30,9 @@ for msg in midi_file.play():
     # Если сообщение является примечанием к сообщению и скорость больше 0
     if msg.type == 'note_on' and msg.note in key_map and msg.velocity > 0:
         # Определение имени ноты и клавиши
-        note_name = mido.midi2str(msg.note)
+        note_name = mido.note_name(msg.note)
         key = key_map[msg.note]
-        print('key_map')
+        print(key)
         # Если нота является знаком #, удерживаем клавишу Shift
         if '#' in note_name:
             keyboard.press(Key.shift)
