@@ -2,35 +2,34 @@ import mido
 from pynput.keyboard import Controller, Key
 import time
 
-# Open the MIDI file
+# OОткрывает MIDI файл
 midi_file = mido.MidiFile('example.mid')
 
-# Define the keyboard controller
+# Определияет контроллер клавиатуры
 keyboard = Controller()
 
-# Define the mapping of MIDI notes to keyboard keys
-# This is just an example, you can customize it as needed
+# Определяет отображение MIDI-нот на клавиши клавиатуры
 key_map = {
-    60: Key.space,    # C4 -> space bar
-    62: Key.right,    # D4 -> right arrow key
-    64: Key.left,     # E4 -> left arrow key
-    65: Key.down,     # F4 -> down arrow key
-    67: Key.up,       # G4 -> up arrow key
+    60: Key.space,    # C4 -> пробел
+    62: Key.right,    # D4 -> вправо
+    64: Key.left,     # E4 -> влево
+    65: Key.down,     # F4 -> вниз
+    67: Key.up,       # G4 -> вверх
 }
 
-# Loop over each message in the MIDI file
+# Повторяет цикл над каждым сообщением в MIDI-файле
 for msg in midi_file.play():
-    # If the message is a NoteOn message and the velocity is greater than 0
+    # Если сообщение является примечанием к сообщению и скорость больше 0
     if msg.type == 'note_on' and msg.velocity > 0:
-        # Check if the note is in the key map
+        # Проверка заметки на карте ключей
         if msg.note in key_map:
-            # Simulate a key press
+            # Симуляция нажатий клавиши
             keyboard.press(key_map[msg.note])
-    # If the message is a NoteOff message or the velocity is 0
+    # Если сообщение является сообщением об отключении записи или скорость равна 0
     elif msg.type == 'note_off' or msg.velocity == 0:
-        # Check if the note is in the key map
+        # Проверка заметки на карте ключей
         if msg.note in key_map:
-            # Simulate a key release
+            # Симуляция отпускания клавиши (типо уже нажата)
             keyboard.release(key_map[msg.note])
-    # Sleep for a short duration to simulate the note duration
+    # Задержка
     time.sleep(msg.time)
