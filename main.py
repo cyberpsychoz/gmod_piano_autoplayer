@@ -46,8 +46,8 @@ for msg in midi_file.play():
             note_name = mido.midi2str(msg.note)
             key = key_map[msg.note]
             # Если нота является знаком #, отпустите клавишу Shift
-            #if '#' in note_name:
-            #    keyboard.release(Key.shift)
+            if '#' in note_name:
+                keyboard.release(Key.shift)
             # Симуляция отпускания клавиши (типо уже нажата)
             keyboard.release(key)
     # Задержка
