@@ -1,54 +1,69 @@
-import mido
-from pynput.keyboard import Controller, Key
+import midi
 import time
+import os
+import sys
 
-# Открывает MIDI файл
-midi_file = mido.MidiFile('example.mid')
+from pathlib import Path
 
-# Определяет контроллер клавиатуры
-keyboard = Controller()
-
-# Определяет отображение MIDI-нот на клавиши клавиатуры
-key_map = {
-    'C4': 1,
-    'C#4':1,
-    'D4': 2,
-    'D#4': 2,
-    'E4': 3,
-    'F4': 4,
-    'F#4': 4,
-    'G4': 5,
-    'G#4': 5,
-    'A4': 6,
-    'A#4': 6,
-    'B4': 7,
-    'C5': 8,
+keys = {
+    0: "z",
+    1: "s",
+    2: "x",
+    3: "d",
+    4: "c",
+    5: "v",
+    6: "g",
+    7: "b",
+    8: "h",
+    9: "n",
+    10: "j",
+    11: "m",
+    12: ",",
+    13: "l",
+    14: ".",
+    15: ";",
+    16: "/",
 }
 
-# Повторяет цикл над каждым сообщением в MIDI-файле
-for msg in midi_file.play():
-    # Если сообщение является примечанием к сообщению и скорость больше 0
-    if msg.type == 'note_on' and msg.note in key_map and msg.velocity > 0:
-        # Определение имени ноты и клавиши
-        note_name = mido.note_name(msg.note)
-        key = key_map[msg.note]
-        print(key)
-        # Если нота является знаком #, удерживаем клавишу Shift
-        if '#' in note_name:
-            keyboard.press(Key.shift)
-        # Симуляция нажатий клавиши
-        keyboard.press(key)
-    # Если сообщение является сообщением об отключении записи или скорость равна 0
-    elif msg.type == 'note_off' or (msg.type == 'note_on' and msg.velocity == 0):
-        # Проверка заметки на карте ключей
-        if msg.note in key_map:
-            # Определение имени ноты и клавиши
-            note_name = mido.midi2str(msg.note)
-            key = key_map[msg.note]
-            # Если нота является знаком #, отпустите клавишу Shift
-            if '#' in note_name:
-                keyboard.release(Key.shift)
-            # Симуляция отпускания клавиши (типо уже нажата)
-            keyboard.release(key)
-    # Задержка
-    time.sleep(msg.time)
+
+def play_key(key):
+    if key in keys:
+        os.system(
+            f"xdotool keydown --window $(xdotool search --name \"Garry's Mod\") {keys[key]}"
+        )
+        time.sleep(0.01)
+        os.system(
+            f"xdotool keyup --window $(xdotool search --name \"Garry's Mod\") {keys[key]}"
+        )
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python main.py <midi file>")
+        sys.exit(1)
+
+    midi_file = sys.argv[1]
+
+    if not Path(midi_file).exists():
+        print(f"File not found: {midi_file}")
+        sys.exit(1)
+
+    pattern = midi.read_midifile(midi_file)
+    pattern.make_ticks_abs()
+
+    last_tick = None
+    for track in pattern:
+        for event in track:
+            if isinstance(event, midi.NoteOnEvent):
+                if last_tick is None:
+                    last_tick = event.tick
+                else:
+                    delta = event.tick - last_tick
+                    if delta > 0:
+                        time.sleep(delta / 1000.0)
+                    last_tick = event.tick
+                play_key(event.data[0] % len(keys))
+
+
+if __name__ == "__main__":
+   main()
