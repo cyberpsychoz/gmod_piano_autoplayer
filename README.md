@@ -1,4 +1,25 @@
-# Garrys'mod Playable piano script Beta 0.2
-A script that turns notes from a midi file into keystrokes on the keyboard.
+# Gmod Piano
+Это проект на Python, который позволяет играть на фортепиано в Gmod, загружая midi файлы.
 
-This code reads the MIDI file named 'example.mid', defines a mapping of MIDI notes to keyboard keys, and simulates keystrokes on the keyboard based on the notes in the MIDI file. NoteOn messages trigger a key press, while NoteOff messages or notes with a velocity of 0 trigger a key release. The code also includes a short delay to simulate the duration of each note.
+## Требования
+Для запуска этого проекта вам нужно установить следующие библиотеки:
+```
+midi
+xdotool
+```
+Вы также должны иметь Garry’s Mod и Playable Piano addon.
+
+## Использование
+Чтобы использовать этот проект, склонируйте репозиторий и запустите скрипт main.py с аргументом, указывающим путь к midi файлу. Например:
+```
+python main.py path/test.mid
+```
+Скрипт будет ждать, пока вы не сядете за фортепиано в игре, и начнет воспроизводить midi файл, нажимая клавиши на клавиатуре.
+
+## Ограничения
+Этот проект имеет некоторые ограничения:
+
+Он работает только на Linux, так как использует xdotool для симуляции нажатий клавиш.
+Он поддерживает только 17 клавиш фортепиано (от z до /), поэтому midi файлы должны быть в этом диапазоне.
+Он не учитывает длительность и громкость нот, поэтому звучание может отличаться от оригинала.
+Он не обрабатывает ошибки и исключения, поэтому может завершиться аварийно при неверном вводе или проблемах с подключением.
